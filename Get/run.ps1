@@ -8,7 +8,8 @@ Write-Host "PowerShell HTTP trigger function processed a request."
 
 $RandomID = $Request.Query.ID
 try {
-  $Password = get-content "PasswordFile_$($RandomID)"  -ErrorAction Stop
+  $EncPassword = get-content "PasswordFile_$($RandomID)" -ErrorAction Stop
+  $password = [System.Net.NetworkCredential]::new("", $EncPassword).Password
   Remove-item "PasswordFile_$($RandomID)" -force -ErrorAction Stop
 }
 catch {
