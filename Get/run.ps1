@@ -9,7 +9,7 @@ Write-Host "PowerShell HTTP trigger function processed a request."
 $RandomID = $Request.Query.ID
 try {
   $Password = get-content "PasswordFile_$($RandomID)"  -ErrorAction Stop
-  Remove-item $RandomID -force -ErrorAction Stop
+  Remove-item "PasswordFile_$($RandomID)" -force -ErrorAction Stop
 }
 catch {
   $Password = "No Password found. This password has already been removed"
