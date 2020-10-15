@@ -6,7 +6,7 @@ param($Request, $TriggerMetadata)
 # Write to the Azure Functions log stream.
 Write-Host "PowerShell HTTP trigger function processed a request."
 if ($null -eq $Request.Query.Password) {
-    $password = Invoke-RestMethod -Uri "$($ENV:WEBSITE_HOSTNAME)/api/Generate"
+    $Password = Invoke-RestMethod -Uri "$($ENV:WEBSITE_HOSTNAME)/api/Generate"
 } else {
     $Password = ($Request.Query.Password)
 }
