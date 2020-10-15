@@ -10,8 +10,9 @@ if ($null -eq $Request.Query.Password) {
 } else {
     $Password = ($Request.Query.Password)
 }
+$EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
 $RandomID = get-random -Minimum 1 -Maximum 999999999999999
-new-item "PasswordFile_$($randomid)" -Value $password -force
+new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
 
 $URL = "$($ENV:WEBSITE_HOSTNAME)/api/Get?ID=$RandomID"
 
