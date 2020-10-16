@@ -2,7 +2,6 @@
   "bindings": [
     {
       "authLevel": "anonymous",
-      "route": "generate",
       "type": "httpTrigger",
       "direction": "in",
       "name": "Request",
