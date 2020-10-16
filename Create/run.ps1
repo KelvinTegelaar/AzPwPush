@@ -6,12 +6,13 @@ $Hostname = $Request.Headers.'disguised-host'
 # Write to the Azure Functions log stream.
 Write-Host "PowerShell HTTP trigger function processed a request."
 if ($null -eq $Request.rawbody) {
-    $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
-} else {
-    $Password = ($Request.rawbody.trim() -split '=') | Select-Object -last 1
-    
+  $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
 }
-$EncPassword = ([System.Web.HttpUtility]::urldecode($password) | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
+else {
+  $Password = ($Request.rawbody.trim() -split '=') | Select-Object -last 1
+  $Password = [System.Web.HttpUtility]::urldecode($Password)
+}
+$EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
 $RandomID = get-random -Minimum 1 -Maximum 999999999999999
 new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
 
@@ -84,7 +85,7 @@ div {
 
 # Associate values to output bindings by calling 'Push-OutputBinding'.
 Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
-        StatusCode  = [HttpStatusCode]::OK
-        Body        = $Body
-        ContentType = 'text/html'
-    })
+    StatusCode  = [HttpStatusCode]::OK
+    Body        = $Body
+    ContentType = 'text/html'
+  })
