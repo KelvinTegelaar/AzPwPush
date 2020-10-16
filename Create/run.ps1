@@ -31,22 +31,25 @@ input[type=text], select {
   box-sizing: border-box;
 }
 
-input[type=submit] {
-  width: 35%;
+.button {
+  width: 25%;
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+.button:hover {
   background-color: #45a049;
-  width: 35%
+  width: 25%
 }
-
+.divider{
+  width:5px;
+  height:auto;
+}
 div {
   border-radius: 5px;
   background-color: #f2f2f2;
@@ -67,8 +70,8 @@ div {
     <label for="URL">Unique Password URL</label><br>
     <input type="text" id="URL" name="URL" disabled value="$($URL)"><br><br>
 
-    Use the button below to generate a new URL with the current password field.<br>
-    <input type="submit" value="Create">
+    Use the Create button below to generate a new URL with the current password field, or use the Generate button to create a new password<br>
+    <input class="button" type="submit" value="Create">  <input onclick="window.location.href='/Create'" class="button" type="button" value="Generate">
   </form>
 
 </div>
