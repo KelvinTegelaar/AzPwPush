@@ -14,7 +14,7 @@ $EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | Conver
 $RandomID = get-random -Minimum 1 -Maximum 999999999999999
 new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
 
-$URL = "$($ENV:WEBSITE_HOSTNAME)/api/Get?ID=$RandomID"
+$URL = "$($ENV:WEBSITE_HOSTNAME)/Get?ID=$RandomID"
 
 # Interact with query parameters or the body of the request.
 $Body = @"
