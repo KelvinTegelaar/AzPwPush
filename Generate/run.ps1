@@ -4,7 +4,7 @@ using namespace System.Net
 param($Request, $TriggerMetadata)
     $CharSet = ('0123456789{]+-[*=@:)}$^%;(_!&#?>/|').ToCharArray() 
     $RandSymbol = (Get-Random -InputObject $CharSet -count 5) -join ''
-    $words = get-content wordlist.txt
+    $words = Import-Csv wordlist.txt
     $Password = ($words |  get-random -count 3) + $RandSymbol -join ''
 
 # Associate values to output bindings by calling 'Push-OutputBinding'.
