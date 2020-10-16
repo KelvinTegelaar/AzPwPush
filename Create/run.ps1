@@ -9,8 +9,9 @@ if ($null -eq $Request.rawbody) {
     $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
 } else {
     $Password = ($Request.rawbody.trim() -split '=') | Select-Object -last 1
+    
 }
-$EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
+$EncPassword = ([System.Web.HttpUtility]::urldecode($password) | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
 $RandomID = get-random -Minimum 1 -Maximum 999999999999999
 new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
 
