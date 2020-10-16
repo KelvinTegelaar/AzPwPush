@@ -5,10 +5,10 @@ param($Request, $TriggerMetadata)
 $Hostname = $Request.Headers.'disguised-host'
 # Write to the Azure Functions log stream.
 Write-Host "PowerShell HTTP trigger function processed a request."
-if ($null -eq $Request.Query.Password) {
+if ($null -eq $Request.rawbody) {
     $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
 } else {
-    $Password = ($Request.Query.Password)
+    $Password = ($Request.rawbody.trim() -split '=') | Select-Object -last 1
 }
 $EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
 $RandomID = get-random -Minimum 1 -Maximum 999999999999999
@@ -64,12 +64,11 @@ div {
 <h3>Generate a one-time password URL</h3>
 
 <div>
-  <form action="create" method=GET enctype="text/plain">
+  <form action="create" method=POST>
     <label for="password">Password</label><br>
     <input type="text" id="password" name="password" value="$($Password)"><br>
     <label for="URL">Unique Password URL</label><br>
-    <input type="text" id="URL" name="URL" disabled value="$($URL)"><br><br>
-
+    <input type="text" id="URL" disabled value="$($URL)"><br><br>
     Use the Create button below to generate a new URL with the current password field, or use the Generate button to create a new password<br>
     <input class="button" type="submit" value="Create">  <input onclick="window.location.href='/Create'" class="button" type="button" value="Generate">
   </form>
