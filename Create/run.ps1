@@ -13,7 +13,7 @@ else {
   $Password = [System.Web.HttpUtility]::urldecode($Password)
 }
 $EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
-$RandomID = get-random -Minimum 1 -Maximum 999999999999999
+$RandomID = New-Guid
 new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
 
 $URL = "https://$($Hostname)/Get?ID=$RandomID"
