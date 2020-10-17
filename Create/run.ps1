@@ -1,20 +1,34 @@
 using namespace System.Net
-
 # Input bindings are passed in via param block.
 param($Request, $TriggerMetadata)
+
 $Hostname = $Request.Headers.'disguised-host'
 # Write to the Azure Functions log stream.
 Write-Host "PowerShell HTTP trigger function processed a request."
+
 if ($null -eq $Request.rawbody) {
   $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
 }
 else {
-  $Password = ($Request.rawbody.trim() -split '=') | Select-Object -last 1
+  $Password = $Request.rawbody
+
+  if($Request.rawbody.IndexOf("=") -ne -1) {
+      $Password = $Password.Substring($Request.rawbody.IndexOf("=") + 1) 
+  }
+
   $Password = [System.Web.HttpUtility]::urldecode($Password)
 }
+
 $EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
-$RandomID = get-random -Minimum 1 -Maximum 999999999999999
-new-item "PasswordFile_$($randomid)" -Value ($encpassword) -force
+
+while ($true) {
+  try {
+    $RandomID = New-Guid
+    new-item "PasswordFile_$($RandomID)" -Value ($encpassword) -ea stop
+    break
+  }
+  catch{}
+}
 
 $URL = "https://$($Hostname)/Get?ID=$RandomID"
 
