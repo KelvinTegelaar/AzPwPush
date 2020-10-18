@@ -9,7 +9,7 @@ if ($null -eq $Request.rawbody) {
   $Password = Invoke-RestMethod -Uri "https://$($Hostname)/Generate"
 }
 else {
-  $Password = $Request.rawbody.Substring($request.rawbody.IndexOf("="))  
+  $Password = $Request.rawbody.Substring($Request.rawbody.IndexOf("="))  
   $Password = [System.Web.HttpUtility]::urldecode($Password)
 }
 $EncPassword = ($password | ConvertTo-SecureString -Force -AsPlainText) | ConvertFrom-SecureString
