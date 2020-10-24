@@ -16,6 +16,12 @@ if ($env:MSI_SECRET) {
     Connect-AzAccount -Identity
 }
 
+# Enter Path to Your Logo:
+# $ENV:LogoImage = ""
+
+# Enter number of days until a password should expire.
+$ENV:MaximumPasswordAge = 5 
+
 # Uncomment the next line to enable legacy AzureRm alias in Azure PowerShell.
 # Enable-AzureRmAlias
 
