@@ -3,18 +3,42 @@ using namespace System.Net
 # Input bindings are passed in via param block.
 param($Request, $TriggerMetadata)
 
+Import-Module .\Modules\AzPwPush.psm1
+
 # Write to the Azure Functions log stream.
 Write-Host "PowerShell HTTP trigger function processed a request."
 
+if(-not [string]::IsNullOrEmpty($ENV:LogoImage)) {
+  $Logo = "<img src=`"$($ENV:LogoImage)`" alt=`"Logo`">"
+}
+else {
+  $Logo = ""
+}
+
 $RandomID = $Request.Query.ID
-try {
-  $EncPassword = get-content "PasswordFile_$($RandomID)" -ErrorAction Stop | ConvertTo-SecureString
-  $password = [System.Net.NetworkCredential]::new("", $EncPassword).Password
-  Remove-item "PasswordFile_$($RandomID)" -force -ErrorAction Stop
+
+$ParsedQueryString = [System.Web.HttpUtility]::ParseQueryString($Request.Body)
+
+$i = 0
+
+foreach($QueryStringObject in $ParsedQueryString) {
+    if($QueryStringObject -eq "ID") {
+      $RandomID = $ParsedQueryString[$i]
+    }
+    $i++
 }
-catch {
-  $Password = "No Password found. This password has already been removed"
+
+$RandomID = $RandomID.ToUpper()
+
+$Password = Get-AzPassword -ID $RandomID
+
+if($Password -eq $false) {
+  $Password = "No Password found. This password may have already been removed."
 }
+
+$Hostname = $Request.Headers.'disguised-host'
+
+$DeleteURL = "https://$($Hostname)/Delete?ID=$RandomID"
 
 # Interact with query parameters or the body of the request.
 $Body = @"
@@ -76,8 +100,8 @@ function outFunc() {
     opacity: 1;
   }
 
-input[type=text], select {
-  width: 35%;
+input#password, select {
+  width: 70%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -87,7 +111,6 @@ input[type=text], select {
 }
 
 .button {
-  width: 35%;
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -99,7 +122,6 @@ input[type=text], select {
 
 .button:hover {
   background-color: #45a049;
-  width: 35%
 }
 
 div {
@@ -111,26 +133,25 @@ div {
 </style>
 <body>
 <center>
-<title>Password Push Portal</Title>
-<img src="$($ENV:LogoImage)" alt="Logo">
+  $($Logo)
+  <title>Password Push Portal</Title>
+  <h3>One time Password</h3>
 
-<h3>One time Password</h3>
-
-<div>
-
-  Please note that this password will only be shown once and will be lost when refreshing. <br>
+  <div>
+    Please note that this password may only be shown for a limited number of times and may be lost when refreshing. <br>
     <label for="password">Password: </label><br>
     <input type="text" id="password" name="password" value="$($Password)"><br>
     <div class="tooltip">
-<button class="button" onclick="myFunction()" onmouseout="outFunc()">
-  <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
-  Copy
-  </button>
-</div>
-
-
-</div>
-  </center>
+      <button class="button" onclick="myFunction()" onmouseout="outFunc()">
+        <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+        Copy
+      </button>
+    </div>
+    <button class="button" onclick="document.location.href='$($DeleteURL)'">
+      Delete
+    </button><br>
+  </div>
+</center>
 </body>
 </html>
 
@@ -142,4 +163,4 @@ Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
     StatusCode  = [HttpStatusCode]::OK
     Body        = $Body
     ContentType = 'text/html'
-  })
+})
