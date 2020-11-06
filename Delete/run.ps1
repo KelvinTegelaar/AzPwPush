@@ -3,6 +3,7 @@ using namespace System.Net
 # Input bindings are passed in via param block.
 param($Request, $TriggerMetadata)
 
+
 Import-Module .\Modules\AzPwPush.psm1
 
 if(-not [string]::IsNullOrEmpty($ENV:LogoImage)) {

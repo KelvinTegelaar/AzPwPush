@@ -12,6 +12,7 @@ if(-not [string]::IsNullOrEmpty($ENV:LogoImage)) {
   $Logo = "<img src=`"$($ENV:LogoImage)`" alt=`"Logo`">"
 }
 else {
+
   $Logo = ""
 }
 
@@ -35,6 +36,7 @@ foreach($QueryStringObject in $ParsedQueryString) {
     }
     $i++
 }
+
 
 if($null -ne $Submit) {
   if([string]::IsNullOrEmpty($Password)) {
