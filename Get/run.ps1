@@ -17,18 +17,6 @@ else {
 
 $RandomID = $Request.Query.ID
 
-$ParsedQueryString = [System.Web.HttpUtility]::ParseQueryString($Request.Body)
-
-$i = 0
-
-foreach($QueryStringObject in $ParsedQueryString) {
-    if($QueryStringObject -eq "ID") {
-      $RandomID = $ParsedQueryString[$i]
-    }
-    $i++
-}
-
-$RandomID = $RandomID.ToUpper()
 
 $Password = Get-AzPassword -ID $RandomID
 
